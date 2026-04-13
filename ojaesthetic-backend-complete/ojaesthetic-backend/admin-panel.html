@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ojaesthetic — Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sacramento&family=DM+Sans:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #6EC6C3;
+  --turquoise: #3FA7A3;
+  --bg: #EAF7F6;
+  --pastel: #B8E1DD;
+  --text: #2F4F4F;
+  --cream: #F5FFFE;
+  --white: #ffffff;
+  --shadow: rgba(62,167,163,0.13);
+  --danger: #e05d5d;
+  --warning: #e8a750;
+  --success: #4caf7d;
+  --sidebar-w: 240px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: var(--sidebar-w);
+  background: var(--text);
+  min-height: 100vh;
+  position: fixed; top: 0; left: 0;
+  display: flex; flex-direction: column;
+  z-index: 100;
+  transition: transform 0.3s;
+}
+.sidebar-logo {
+  padding: 1.8rem 1.5rem 1.2rem;
+  border-bottom: 1px solid rgba(184,225,221,0.12);
+}
+.sidebar-logo a {
+  font-family: 'Sacramento', cursive;
+  font-size: 1.9rem;
+  color: var(--teal);
+  text-decoration: none;
+}
+.sidebar-logo span {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(184,225,221,0.4);
+  margin-top: 0.1rem;
+}
+.nav-section {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(184,225,221,0.08);
+}
+.nav-section-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(184,225,221,0.3);
+  padding: 0 1.4rem;
+  margin-bottom: 0.4rem;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.65rem 1.4rem;
+  color: rgba(184,225,221,0.6);
+  text-decoration: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover, .nav-item.active {
+  color: var(--teal);
+  background: rgba(110,198,195,0.08);
+}
+.nav-item.active { border-left: 2px solid var(--teal); }
+.nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+.badge {
+  margin-left: auto;
+  background: var(--danger);
+  color: white;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+.badge.teal { background: var(--turquoise); }
+.sidebar-footer {
+  margin-top: auto;
+  padding: 1rem 1.4rem;
+  border-top: 1px solid rgba(184,225,221,0.1);
+}
+.admin-user {
+  display: flex; align-items: center; gap: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+.admin-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--turquoise));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; flex-shrink: 0;
+}
+.admin-name { font-size: 0.8rem; color: rgba(184,225,221,0.7); line-height: 1.2; }
+.admin-role { font-size: 0.65rem; color: var(--teal); letter-spacing: 0.1em; text-transform: uppercase; }
+.btn-logout {
+  width: 100%; padding: 0.55rem; border-radius: 8px;
+  background: rgba(224,93,93,0.12); border: 1px solid rgba(224,93,93,0.2);
+  color: #e05d5d; font-size: 0.8rem; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-logout:hover { background: rgba(224,93,93,0.2); }
+
+/* ── MAIN ── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex; flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+#topbar {
+  background: var(--white);
+  padding: 1rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(110,198,195,0.15);
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 400; }
+.topbar-actions { display: flex; gap: 0.7rem; align-items: center; }
+
+/* ── PAGES ── */
+.page { display: none; padding: 2rem; flex: 1; }
+.page.active { display: block; }
+
+/* ── STAT CARDS ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 1.4rem;
+  box-shadow: 0 3px 16px var(--shadow);
+  display: flex; flex-direction: column; gap: 0.4rem;
+  border-left: 3px solid var(--teal);
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-label { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.55; }
+.stat-value { font-size: 2rem; font-weight: 600; color: var(--turquoise); line-height: 1; }
+.stat-icon { font-size: 1.4rem; margin-bottom: 0.2rem; }
+.stat-card.danger { border-left-color: var(--danger); }
+.stat-card.danger .stat-value { color: var(--danger); }
+.stat-card.warning { border-left-color: var(--warning); }
+.stat-card.warning .stat-value { color: var(--warning); }
+
+/* ── TABLES ── */
+.table-card {
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 3px 16px var(--shadow);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.table-header {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(110,198,195,0.12);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.table-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem; font-weight: 400;
+}
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: rgba(234,247,246,0.6); }
+th {
+  padding: 0.75rem 1.2rem;
+  text-align: left;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--turquoise);
+  font-weight: 500;
+}
+td {
+  padding: 0.85rem 1.2rem;
+  font-size: 0.83rem;
+  border-bottom: 1px solid rgba(110,198,195,0.08);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(234,247,246,0.5); }
+
+/* ── STATUS BADGES ── */
+.status {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.status.pending      { background: rgba(232,167,80,0.15);  color: var(--warning); }
+.status.reviewing    { background: rgba(110,198,195,0.15); color: var(--teal); }
+.status.accepted     { background: rgba(76,175,125,0.15);  color: var(--success); }
+.status.in_progress  { background: rgba(63,167,163,0.15);  color: var(--turquoise); }
+.status.completed    { background: rgba(76,175,125,0.2);   color: var(--success); }
+.status.cancelled    { background: rgba(224,93,93,0.12);   color: var(--danger); }
+.status.approved     { background: rgba(76,175,125,0.2);   color: var(--success); }
+.status.unapproved   { background: rgba(232,167,80,0.15);  color: var(--warning); }
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: opacity 0.2s, transform 0.15s;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+}
+.btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn-teal    { background: var(--turquoise); color: white; }
+.btn-outline { background: transparent; border: 1.5px solid var(--pastel); color: var(--text); }
+.btn-danger  { background: rgba(224,93,93,0.1); color: var(--danger); border: 1px solid rgba(224,93,93,0.2); }
+.btn-success { background: rgba(76,175,125,0.12); color: var(--success); border: 1px solid rgba(76,175,125,0.25); }
+.btn-sm { padding: 0.3rem 0.75rem; font-size: 0.73rem; }
+
+/* ── SEARCH / FILTER BAR ── */
+.filter-bar {
+  display: flex; gap: 0.8rem; flex-wrap: wrap;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(110,198,195,0.1);
+  background: rgba(234,247,246,0.3);
+}
+.filter-input, .filter-select {
+  padding: 0.55rem 1rem;
+  border: 1.5px solid var(--pastel);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.filter-input:focus, .filter-select:focus { border-color: var(--teal); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(47,79,79,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(47,79,79,0.2);
+  animation: modalIn 0.25s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.96)} to{opacity:1;transform:none} }
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; margin-bottom: 1.5rem;
+}
+.modal-footer { display: flex; gap: 0.8rem; justify-content: flex-end; margin-top: 1.5rem; }
+.form-group { margin-bottom: 1.1rem; }
+.form-label {
+  display: block;
+  font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--turquoise); margin-bottom: 0.35rem;
+}
+.form-control {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid var(--pastel);
+  border-radius: 10px;
+  background: var(--cream);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-control:focus { border-color: var(--teal); }
+textarea.form-control { resize: vertical; min-height: 90px; }
+
+/* ── TOAST ── */
+#toast-container {
+  position: fixed; bottom: 2rem; right: 2rem;
+  z-index: 9999; display: flex; flex-direction: column; gap: 0.6rem;
+}
+.toast {
+  padding: 0.8rem 1.4rem;
+  border-radius: 50px;
+  color: white; font-size: 0.85rem;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  animation: toastIn 0.3s ease;
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.toast.success { background: var(--turquoise); }
+.toast.error   { background: var(--danger); }
+.toast.info    { background: var(--warning); }
+
+/* ── UPLOAD ZONE ── */
+.upload-zone {
+  border: 2px dashed var(--pastel);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--teal);
+  background: rgba(110,198,195,0.05);
+}
+.upload-preview {
+  display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.8rem;
+}
+.upload-thumb {
+  width: 80px; height: 80px; object-fit: cover;
+  border-radius: 8px; border: 1.5px solid var(--pastel);
+}
+
+/* ── MISC ── */
+.empty-state {
+  text-align: center; padding: 3rem; opacity: 0.45;
+  font-size: 0.9rem;
+}
+.avatar-sm {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--pastel), var(--teal));
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; flex-shrink: 0; vertical-align: middle;
+}
+.truncate { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media(max-width:768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* ── LOGIN SCREEN ── */
+#login-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  width: 100%; max-width: 400px;
+  box-shadow: 0 20px 60px var(--shadow);
+  text-align: center;
+}
+.login-logo {
+  font-family: 'Sacramento', cursive;
+  font-size: 3rem; color: var(--turquoise);
+  margin-bottom: 0.2rem;
+}
+.login-sub { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); opacity: 0.6; margin-bottom: 2rem; }
+.btn-login-submit {
+  width: 100%; padding: 0.9rem;
+  background: linear-gradient(135deg, var(--teal), var(--turquoise));
+  color: white; border: none; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  cursor: pointer; margin-top: 0.5rem;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.btn-login-submit:hover { opacity: 0.88; transform: translateY(-1px); }
+.login-error { color: var(--danger); font-size: 0.8rem; margin-top: 0.5rem; display: none; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Ojaesthetic</div>
+    <div class="login-sub">Admin Panel</div>
+    <div class="form-group" style="text-align:left">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" id="loginEmail" placeholder="admin@ojaesthetic.com">
+    </div>
+    <div class="form-group" style="text-align:left">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-control" id="loginPassword" placeholder="••••••••">
+    </div>
+    <button class="btn-login-submit" onclick="doLogin()">Sign In 🦋</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <a href="../ojaesthetic.html" target="_blank">Ojaesthetic</a>
+    <span>Admin Panel</span>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Overview</div>
+    <button class="nav-item active" onclick="showPage('dashboard', this)">
+      <span class="nav-icon">🏠</span> Dashboard
+    </button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Content</div>
+    <button class="nav-item" onclick="showPage('artworks', this)">
+      <span class="nav-icon">🖼️</span> Artworks
+    </button>
+    <button class="nav-item" onclick="showPage('orders', this)">
+      <span class="nav-icon">🎁</span> Orders
+      <span class="badge" id="pendingBadge" style="display:none">0</span>
+    </button>
+    <button class="nav-item" onclick="showPage('reviews', this)">
+      <span class="nav-icon">⭐</span> Reviews
+      <span class="badge" id="reviewBadge" style="display:none">0</span>
+    </button>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Users</div>
+    <button class="nav-item" onclick="showPage('users', this)">
+      <span class="nav-icon">👥</span> All Users
+    </button>
+    <button class="nav-item" onclick="showPage('newsletter', this)">
+      <span class="nav-icon">💌</span> Newsletter
+      <span class="badge teal" id="subsBadge" style="display:none">0</span>
+    </button>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="admin-user">
+      <div class="admin-avatar">👑</div>
+      <div>
+        <div class="admin-name" id="sidebarName">Admin</div>
+        <div class="admin-role">Administrator</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════════════════ -->
+<div id="main">
+  <div id="topbar">
+    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+    <div class="topbar-actions">
+      <button class="btn btn-outline btn-sm" onclick="refreshCurrentPage()">↻ Refresh</button>
+      <a href="../ojaesthetic.html" target="_blank" class="btn btn-teal btn-sm">View Site →</a>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="page active" id="page-dashboard">
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="stat-icon">🎨</div><div class="stat-label">Artworks</div><div class="stat-value" id="s-artworks">—</div></div>
+      <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">Users</div><div class="stat-value" id="s-users">—</div></div>
+      <div class="stat-card warning"><div class="stat-icon">⏳</div><div class="stat-label">Pending Orders</div><div class="stat-value" id="s-pending">—</div></div>
+      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Completed</div><div class="stat-value" id="s-completed">—</div></div>
+      <div class="stat-card danger"><div class="stat-icon">⭐</div><div class="stat-label">Awaiting Review</div><div class="stat-value" id="s-reviews">—</div></div>
+      <div class="stat-card"><div class="stat-icon">💌</div><div class="stat-label">Subscribers</div><div class="stat-value" id="s-subs">—</div></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">Recent Orders</div>
+        <button class="btn btn-outline btn-sm" onclick="showPage('orders', document.querySelector('[onclick*=orders]'))">View All</button>
+      </div>
+      <table>
+        <thead><tr><th>Client</th><th>Type</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody id="recentOrdersBody"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── ARTWORKS ── -->
+  <div class="page" id="page-artworks">
+    <div style="display:flex;gap:1rem;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-teal" onclick="openArtworkModal()">+ Upload Artwork</button>
+      <input class="filter-input" placeholder="🔍 Search artworks…" id="artworkSearch" oninput="filterArtworks()">
+      <select class="filter-select" id="artworkCatFilter" onchange="filterArtworks()">
+        <option value="">All Categories</option>
+        <option>Painting</option><option>Sketch</option><option>Digital</option><option>Mixed Media</option>
+      </select>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead><tr><th>Preview</th><th>Title</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="artworksBody"><tr><td colspan="6" class="empty-state">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── ORDERS ── -->
+  <div class="page" id="page-orders">
+    <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+      <select class="filter-select" id="orderStatusFilter" onchange="loadOrders()">
+        <option value="">All Statuses</option>
+        <option>pending</option><option>reviewing</option><option>accepted</option>
+        <option>in_progress</option><option>completed</option><option>cancelled</option>
+      </select>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead><tr><th>Client</th><th>Email</th><th>Artwork Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody id="ordersBody"><tr><td colspan="6" class="empty-state">Loading…</td></tr></tbody>
+      </table>
+    </div>
+    <div id="ordersPagination" style="padding:1rem 1.5rem;display:flex;gap:0.5rem"></div>
+  </div>
+
+  <!-- ── REVIEWS ── -->
+  <div class="page" id="page-reviews">
+    <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+      <select class="filter-select" id="reviewFilter" onchange="loadReviews()">
+        <option value="">All Reviews</option>
+        <option value="false">Pending Approval</option>
+        <option value="true">Approved</option>
+      </select>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead><tr><th>User</th><th>Review</th><th>Rating</th><th>Status</th><th>Featured</th><th>Actions</th></tr></thead>
+        <tbody id="reviewsBody"><tr><td colspan="6" class="empty-state">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── USERS ── -->
+  <div class="page" id="page-users">
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">All Users</div>
+        <input class="filter-input" placeholder="🔍 Search users…" id="userSearch" oninput="filterUsers()">
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Orders</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="usersBody"><tr><td colspan="7" class="empty-state">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── NEWSLETTER ── -->
+  <div class="page" id="page-newsletter">
+    <div style="display:flex;gap:1rem;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-teal" onclick="exportSubscribers()">⬇ Export CSV</button>
+      <span id="subsCount" style="font-size:.85rem;opacity:.6"></span>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead><tr><th>Email</th><th>Source</th><th>Subscribed</th><th>Status</th></tr></thead>
+        <tbody id="newsletterBody"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════════════════════ -->
+
+<!-- Artwork Upload Modal -->
+<div class="modal-overlay" id="artworkModal">
+  <div class="modal">
+    <div class="modal-title">🎨 Upload Artwork</div>
+    <div class="form-group">
+      <label class="form-label">Title *</label>
+      <input class="form-control" id="aw-title" placeholder="e.g. Bloom in Teal">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select class="form-control" id="aw-category">
+          <option>Painting</option><option>Sketch</option><option>Digital</option><option>Mixed Media</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Price (₹)</label>
+        <input class="form-control" id="aw-price" type="number" min="0" placeholder="Leave blank = on request">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-control" id="aw-desc" placeholder="Describe this piece…"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tags (comma separated)</label>
+      <input class="form-control" id="aw-tags" placeholder="floral, teal, abstract">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" style="display:flex;align-items:center;gap:.5rem">
+          <input type="checkbox" id="aw-downloadable"> Downloadable
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="display:flex;align-items:center;gap:.5rem">
+          <input type="checkbox" id="aw-featured"> Featured
+        </label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Artwork Image *</label>
+      <div class="upload-zone" id="awUploadZone" onclick="document.getElementById('aw-image').click()">
+        <div id="awUploadText">Click to select image (max 8MB)</div>
+        <div class="upload-preview" id="awPreview"></div>
+      </div>
+      <input type="file" id="aw-image" accept="image/*" style="display:none" onchange="previewImage(this, 'awPreview', 'awUploadText')">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('artworkModal')">Cancel</button>
+      <button class="btn btn-teal" onclick="submitArtwork()">Upload Artwork</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Detail / Status Modal -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <div class="modal-title">🎁 Order Details</div>
+    <div id="orderModalContent"></div>
+    <div class="form-group">
+      <label class="form-label">Update Status</label>
+      <select class="form-control" id="orderStatusSelect">
+        <option>pending</option><option>reviewing</option><option>accepted</option>
+        <option>in_progress</option><option>completed</option><option>cancelled</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Admin Notes</label>
+      <textarea class="form-control" id="orderNotes" placeholder="Message to client…"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Final Artwork URL (when complete)</label>
+      <input class="form-control" id="orderFinalUrl" placeholder="https://cloudinary.com/…">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('orderModal')">Close</button>
+      <button class="btn btn-teal" onclick="updateOrderStatus()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════
+const API_BASE = 'http://localhost:5000/api';
+let TOKEN = localStorage.getItem('oja_admin_token') || '';
+let currentOrderId = null;
+let allArtworks = [];
+let allUsers = [];
+
+// ═══════════════════════════════════════════════════════════
+// API HELPER
+// ═══════════════════════════════════════════════════════════
+async function api(endpoint, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (TOKEN) headers['Authorization'] = `Bearer ${TOKEN}`;
+  if (opts.body instanceof FormData) delete headers['Content-Type'];
+  const res = await fetch(`${API_BASE}${endpoint}`, { ...opts, headers });
+  const data = await res.json().catch(() => ({ success: false, message: 'Parse error' }));
+  if (!res.ok) throw new Error(data.message || `Error ${res.status}`);
+  return data;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .4s'; setTimeout(() => el.remove(), 400); }, 3200);
+}
+
+// ═══════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd   = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+  try {
+    const data = await api('/auth/login', { method: 'POST', body: JSON.stringify({ email, password: pwd }) });
+    if (data.user.role !== 'admin') throw new Error('Access denied. Admin only.');
+    TOKEN = data.token;
+    localStorage.setItem('oja_admin_token', TOKEN);
+    localStorage.setItem('oja_admin_user', JSON.stringify(data.user));
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('sidebarName').textContent = data.user.name;
+    initDashboard();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('oja_admin_token');
+  localStorage.removeItem('oja_admin_user');
+  TOKEN = '';
+  location.reload();
+}
+
+// Check existing session
+window.addEventListener('DOMContentLoaded', () => {
+  const savedUser = localStorage.getItem('oja_admin_user');
+  if (TOKEN && savedUser) {
+    const user = JSON.parse(savedUser);
+    if (user.role === 'admin') {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('sidebarName').textContent = user.name;
+      initDashboard();
+    }
+  }
+  // Enter key on login
+  document.getElementById('loginPassword').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+// PAGE NAVIGATION
+// ═══════════════════════════════════════════════════════════
+const pageTitles = {
+  dashboard: 'Dashboard',
+  artworks:  'Artworks',
+  orders:    'Orders',
+  reviews:   'Reviews',
+  users:     'Users',
+  newsletter:'Newsletter',
+};
+const pageLoaders = {
+  dashboard:  loadDashboard,
+  artworks:   loadArtworks,
+  orders:     loadOrders,
+  reviews:    loadReviews,
+  users:      loadUsers,
+  newsletter: loadNewsletter,
+};
+
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbarTitle').textContent = pageTitles[name] || name;
+  if (pageLoaders[name]) pageLoaders[name]();
+}
+
+function refreshCurrentPage() {
+  const active = document.querySelector('.page.active');
+  if (active) {
+    const name = active.id.replace('page-', '');
+    if (pageLoaders[name]) pageLoaders[name]();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════
+async function initDashboard() { await loadDashboard(); }
+
+async function loadDashboard() {
+  try {
+    const data = await api('/admin/dashboard');
+    const s = data.stats;
+    document.getElementById('s-artworks').textContent  = s.totalArtworks;
+    document.getElementById('s-users').textContent     = s.totalUsers;
+    document.getElementById('s-pending').textContent   = s.pendingOrders;
+    document.getElementById('s-completed').textContent = s.completedOrders;
+    document.getElementById('s-reviews').textContent   = s.pendingReviews;
+    document.getElementById('s-subs').textContent      = s.totalSubscribers;
+
+    // Update sidebar badges
+    if (s.pendingOrders > 0) {
+      const b = document.getElementById('pendingBadge');
+      b.textContent = s.pendingOrders; b.style.display = '';
+    }
+    if (s.pendingReviews > 0) {
+      const b = document.getElementById('reviewBadge');
+      b.textContent = s.pendingReviews; b.style.display = '';
+    }
+    if (s.totalSubscribers > 0) {
+      const b = document.getElementById('subsBadge');
+      b.textContent = s.totalSubscribers; b.style.display = '';
+    }
+
+    // Recent orders
+    const tbody = document.getElementById('recentOrdersBody');
+    if (!data.recentOrders.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No orders yet 🌸</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.recentOrders.map(o => `
+      <tr>
+        <td><strong>${o.name || o.userId?.name || '—'}</strong></td>
+        <td>${o.artworkType}</td>
+        <td><span class="status ${o.status}">${o.status.replace('_',' ')}</span></td>
+        <td>${fmtDate(o.createdAt)}</td>
+        <td>
+          <button class="btn btn-outline btn-sm" onclick="openOrderModal('${o._id}')">Manage</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ARTWORKS
+// ═══════════════════════════════════════════════════════════
+async function loadArtworks() {
+  try {
+    const data = await api('/artworks?limit=100');
+    allArtworks = data.artworks;
+    renderArtworks(allArtworks);
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+function renderArtworks(list) {
+  const tbody = document.getElementById('artworksBody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No artworks yet 🎨</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(a => `
+    <tr>
+      <td>
+        <img src="${a.imageUrl}" style="width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid var(--pastel)">
+      </td>
+      <td><strong>${a.title}</strong><br><small style="opacity:.5">${a.tags?.join(', ') || ''}</small></td>
+      <td>${a.category}</td>
+      <td>${a.price ? `₹${a.price.toLocaleString('en-IN')}` : '<em style="opacity:.4">On Request</em>'}</td>
+      <td>
+        <span class="status ${a.featured ? 'approved' : 'unapproved'}">${a.featured ? 'Featured' : 'Standard'}</span>
+        ${a.downloadable ? '<span class="status approved" style="margin-left:.3rem">DL</span>' : ''}
+      </td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="deleteArtwork('${a._id}', '${a.title.replace(/'/g,"\\'")}')">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterArtworks() {
+  const q   = document.getElementById('artworkSearch').value.toLowerCase();
+  const cat = document.getElementById('artworkCatFilter').value;
+  const filtered = allArtworks.filter(a =>
+    (!q   || a.title.toLowerCase().includes(q) || (a.tags||[]).join(' ').includes(q)) &&
+    (!cat || a.category === cat)
+  );
+  renderArtworks(filtered);
+}
+
+function openArtworkModal() { openModal('artworkModal'); }
+
+async function submitArtwork() {
+  const title = document.getElementById('aw-title').value.trim();
+  const cat   = document.getElementById('aw-category').value;
+  const file  = document.getElementById('aw-image').files[0];
+  if (!title) return toast('Title is required', 'error');
+  if (!file)  return toast('Please select an image', 'error');
+
+  const fd = new FormData();
+  fd.append('title',        title);
+  fd.append('category',     cat);
+  fd.append('description',  document.getElementById('aw-desc').value);
+  fd.append('tags',         document.getElementById('aw-tags').value);
+  fd.append('price',        document.getElementById('aw-price').value);
+  fd.append('downloadable', document.getElementById('aw-downloadable').checked);
+  fd.append('featured',     document.getElementById('aw-featured').checked);
+  fd.append('image',        file);
+
+  try {
+    await api('/artworks', { method: 'POST', body: fd });
+    toast('Artwork uploaded! 🎨');
+    closeModal('artworkModal');
+    loadArtworks();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+async function deleteArtwork(id, title) {
+  if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+  try {
+    await api(`/artworks/${id}`, { method: 'DELETE' });
+    toast('Artwork deleted.');
+    loadArtworks();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ORDERS
+// ═══════════════════════════════════════════════════════════
+async function loadOrders() {
+  const status = document.getElementById('orderStatusFilter').value;
+  try {
+    const data = await api(`/orders${status ? '?status=' + status : ''}`, { method: 'GET' });
+    const tbody = document.getElementById('ordersBody');
+    if (!data.orders.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No orders found 🌿</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.orders.map(o => `
+      <tr>
+        <td><strong>${o.name || o.userId?.name || '—'}</strong></td>
+        <td class="truncate">${o.email || o.userId?.email || '—'}</td>
+        <td>${o.artworkType}</td>
+        <td><span class="status ${o.status}">${o.status.replace('_',' ')}</span></td>
+        <td>${fmtDate(o.createdAt)}</td>
+        <td>
+          <button class="btn btn-teal btn-sm" onclick="openOrderModal('${o._id}')">Manage</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteOrder('${o._id}')">Del</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+async function openOrderModal(id) {
+  currentOrderId = id;
+  try {
+    const data = await api(`/orders/${id}`);
+    const o = data.order;
+    document.getElementById('orderModalContent').innerHTML = `
+      <div style="background:var(--bg);border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;font-size:.88rem;line-height:1.9">
+        <div><strong>Client:</strong> ${o.name}</div>
+        <div><strong>Email:</strong> ${o.email}</div>
+        <div><strong>Type:</strong> ${o.artworkType}</div>
+        ${o.budget ? `<div><strong>Budget:</strong> ₹${o.budget.toLocaleString('en-IN')}</div>` : ''}
+        <div style="margin-top:.6rem"><strong>Message:</strong><br><em>${o.message}</em></div>
+        ${o.referenceImages?.length ? `
+          <div style="margin-top:.8rem"><strong>Reference Images:</strong></div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem">
+            ${o.referenceImages.map(url => `<img src="${url}" class="upload-thumb">`).join('')}
+          </div>` : ''}
+      </div>
+    `;
+    document.getElementById('orderStatusSelect').value = o.status;
+    document.getElementById('orderNotes').value        = o.adminNotes || '';
+    document.getElementById('orderFinalUrl').value     = o.finalArtworkUrl || '';
+    openModal('orderModal');
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+async function updateOrderStatus() {
+  if (!currentOrderId) return;
+  const status         = document.getElementById('orderStatusSelect').value;
+  const adminNotes     = document.getElementById('orderNotes').value;
+  const finalArtworkUrl= document.getElementById('orderFinalUrl').value;
+  try {
+    await api(`/orders/${currentOrderId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, adminNotes, finalArtworkUrl }),
+    });
+    toast('Order updated! ✨');
+    closeModal('orderModal');
+    loadOrders();
+    loadDashboard();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+async function deleteOrder(id) {
+  if (!confirm('Delete this order? This cannot be undone.')) return;
+  try {
+    await api(`/orders/${id}`, { method: 'DELETE' });
+    toast('Order deleted.');
+    loadOrders();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// REVIEWS
+// ═══════════════════════════════════════════════════════════
+async function loadReviews() {
+  try {
+    const data = await api('/reviews/all');
+    const filter = document.getElementById('reviewFilter').value;
+    const filtered = filter === '' ? data.reviews :
+      data.reviews.filter(r => String(r.isApproved) === filter);
+    const tbody = document.getElementById('reviewsBody');
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No reviews yet ⭐</td></tr>';
+      return;
+    }
+    tbody.innerHTML = filtered.map(r => `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <div class="avatar-sm">${r.userId?.name?.[0] || '?'}</div>
+            <span>${r.userId?.name || 'Unknown'}</span>
+          </div>
+        </td>
+        <td class="truncate" style="max-width:260px">${r.text}</td>
+        <td>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</td>
+        <td><span class="status ${r.isApproved ? 'approved' : 'unapproved'}">${r.isApproved ? 'Approved' : 'Pending'}</span></td>
+        <td>${r.isHighlighted ? '✅ Yes' : '—'}</td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap">
+          ${!r.isApproved ? `<button class="btn btn-success btn-sm" onclick="moderateReview('${r._id}',true,${r.isHighlighted})">Approve</button>` : ''}
+          <button class="btn btn-outline btn-sm" onclick="moderateReview('${r._id}',${r.isApproved},${!r.isHighlighted})">
+            ${r.isHighlighted ? 'Unfeature' : 'Feature'}
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteReview('${r._id}')">Del</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+async function moderateReview(id, isApproved, isHighlighted) {
+  try {
+    await api(`/reviews/${id}`, { method: 'PATCH', body: JSON.stringify({ isApproved, isHighlighted }) });
+    toast(isApproved ? 'Review approved ✅' : 'Review updated');
+    loadReviews();
+    loadDashboard();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+async function deleteReview(id) {
+  if (!confirm('Delete this review?')) return;
+  try {
+    await api(`/reviews/${id}`, { method: 'DELETE' });
+    toast('Review deleted.');
+    loadReviews();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// USERS
+// ═══════════════════════════════════════════════════════════
+async function loadUsers() {
+  try {
+    const data = await api('/admin/users');
+    allUsers = data.users;
+    renderUsers(allUsers);
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+function renderUsers(list) {
+  const tbody = document.getElementById('usersBody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No users yet 👥</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(u => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <div class="avatar-sm">${u.name[0]}</div>
+          <strong>${u.name}</strong>
+        </div>
+      </td>
+      <td class="truncate">${u.email}</td>
+      <td><span class="status ${u.role === 'admin' ? 'approved' : 'reviewing'}">${u.role}</span></td>
+      <td>${u.orders?.length || 0}</td>
+      <td>${fmtDate(u.createdAt)}</td>
+      <td><span class="status ${u.isActive ? 'completed' : 'cancelled'}">${u.isActive ? 'Active' : 'Inactive'}</span></td>
+      <td>
+        ${u.role !== 'admin' ? `
+          <button class="btn ${u.isActive ? 'btn-danger' : 'btn-success'} btn-sm"
+            onclick="toggleUser('${u._id}','${u.name.replace(/'/g,"\\\'")}',${u.isActive})">
+            ${u.isActive ? 'Deactivate' : 'Activate'}
+          </button>` : '<em style="opacity:.4">—</em>'}
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterUsers() {
+  const q = document.getElementById('userSearch').value.toLowerCase();
+  renderUsers(q ? allUsers.filter(u => u.name.toLowerCase().includes(q) || u.email.includes(q)) : allUsers);
+}
+
+async function toggleUser(id, name, isActive) {
+  if (!confirm(`${isActive ? 'Deactivate' : 'Activate'} user "${name}"?`)) return;
+  try {
+    await api(`/admin/users/${id}/toggle`, { method: 'PATCH' });
+    toast(`User ${isActive ? 'deactivated' : 'activated'}.`);
+    loadUsers();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// NEWSLETTER
+// ═══════════════════════════════════════════════════════════
+async function loadNewsletter() {
+  try {
+    const data = await api('/newsletter/subscribers');
+    const active = data.subscribers.filter(s => s.isActive).length;
+    document.getElementById('subsCount').textContent = `${active} active subscribers`;
+    const tbody = document.getElementById('newsletterBody');
+    if (!data.subscribers.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No subscribers yet 💌</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.subscribers.map(s => `
+      <tr>
+        <td>${s.email}</td>
+        <td>${s.source || '—'}</td>
+        <td>${fmtDate(s.subscribedAt)}</td>
+        <td><span class="status ${s.isActive ? 'completed' : 'cancelled'}">${s.isActive ? 'Active' : 'Unsubscribed'}</span></td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+function exportSubscribers() {
+  window.open(`${API_BASE}/admin/newsletter/export`, '_blank');
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+function previewImage(input, previewId, textId) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById(textId).textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.className = 'upload-thumb';
+    const prev = document.getElementById(previewId);
+    prev.innerHTML = '';
+    prev.appendChild(img);
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+}
+</script>
+</body>
+</html>

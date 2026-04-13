@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ojaesthetic – Where colors speak and art feels alive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #6EC6C3;
+    --turquoise: #3FA7A3;
+    --bg: #EAF7F6;
+    --pastel: #B8E1DD;
+    --text: #2F4F4F;
+    --cream: #F5FFFE;
+    --white: #ffffff;
+    --shadow: rgba(62,167,163,0.15);
+    --dark-bg: #1a2e2e;
+    --dark-surface: #223838;
+    --dark-text: #c8eae8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  body.dark {
+    --bg: #1a2e2e;
+    --text: #c8eae8;
+    --cream: #1f3535;
+    --white: #223838;
+    --shadow: rgba(110,198,195,0.12);
+    --pastel: #2a4646;
+  }
+
+  /* === CUSTOM CURSOR === */
+  #cursor {
+    width: 12px; height: 12px;
+    background: var(--turquoise);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, background 0.3s;
+    mix-blend-mode: multiply;
+  }
+  #cursor-trail {
+    width: 32px; height: 32px;
+    border: 1.5px solid var(--teal);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%,-50%);
+    transition: all 0.18s ease;
+    opacity: 0.5;
+  }
+
+  /* === LOADING SCREEN === */
+  #loader {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 99997;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  #loader.hidden { opacity: 0; visibility: hidden; }
+  #loader .loader-logo {
+    font-family: 'Sacramento', cursive;
+    font-size: 3.5rem;
+    color: var(--turquoise);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  #loader .loader-hint {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--teal);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  @keyframes pulse { 0%,100%{opacity:.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.04)} }
+
+  /* === BUTTERFLY CANVAS === */
+  #butterfly-canvas {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* === NAV === */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(234,247,246,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(110,198,195,0.15);
+    transition: background 0.3s;
+  }
+  body.dark nav { background: rgba(26,46,46,0.9); }
+
+  .nav-logo {
+    font-family: 'Sacramento', cursive;
+    font-size: 2rem;
+    color: var(--turquoise);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a {
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    opacity: 0.75;
+    transition: opacity 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; color: var(--turquoise); }
+  .nav-actions { display: flex; gap: 1rem; align-items: center; }
+  .btn-dark {
+    background: none; border: none; cursor: none;
+    font-size: 1.1rem; color: var(--text); opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .btn-dark:hover { opacity: 1; }
+
+  /* === HERO === */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(184,225,221,0.5) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 30% at 80% 20%, rgba(110,198,195,0.2) 0%, transparent 60%),
+                var(--bg);
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 680px; }
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--turquoise);
+    margin-bottom: 1.2rem;
+    opacity: 0.8;
+  }
+  .hero-title {
+    font-family: 'Sacramento', cursive;
+    font-size: clamp(4rem, 12vw, 8rem);
+    color: var(--turquoise);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 4px 24px rgba(63,167,163,0.18));
+  }
+  .hero-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    font-style: italic;
+    color: var(--text);
+    opacity: 0.75;
+    margin-bottom: 1.8rem;
+    font-weight: 300;
+  }
+  .hero-intro {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--text);
+    opacity: 0.65;
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    margin-left: auto; margin-right: auto;
+  }
+  .btn-primary {
+    display: inline-block;
+    padding: 0.85rem 2.4rem;
+    background: var(--turquoise);
+    color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+    box-shadow: 0 6px 24px rgba(63,167,163,0.3);
+    cursor: none;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(63,167,163,0.4);
+    background: #359994;
+  }
+
+  /* === SECTION SHARED === */
+  section { position: relative; }
+  .wave-top, .wave-bottom {
+    width: 100%; overflow: hidden;
+    line-height: 0;
+  }
+  .wave-top svg, .wave-bottom svg { display: block; }
+
+  .section-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--turquoise);
+    margin-bottom: 0.6rem;
+    opacity: 0.8;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 1.2rem;
+  }
+  .section-title em { font-style: italic; color: var(--turquoise); }
+
+  /* === ABOUT === */
+  #about {
+    padding: 5rem 2rem 6rem;
+    background: var(--cream);
+  }
+  .about-inner {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .about-art-placeholder {
+    aspect-ratio: 4/5;
+    border-radius: 40% 60% 55% 45% / 40% 45% 55% 60%;
+    background: linear-gradient(135deg, var(--pastel) 0%, var(--teal) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+    box-shadow: 0 20px 60px var(--shadow);
+    animation: morph 8s ease-in-out infinite;
+  }
+  @keyframes morph {
+    0%,100%{ border-radius: 40% 60% 55% 45% / 40% 45% 55% 60%; }
+    50%{ border-radius: 55% 45% 40% 60% / 55% 60% 40% 45%; }
+  }
+  .about-text p {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    opacity: 0.75;
+    margin-bottom: 1rem;
+  }
+  .about-text .quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--turquoise);
+    border-left: 2px solid var(--teal);
+    padding-left: 1.2rem;
+    margin: 1.5rem 0;
+    opacity: 1;
+  }
+
+  /* === GALLERY === */
+  #gallery {
+    padding: 5rem 2rem 6rem;
+    background: var(--bg);
+  }
+  .gallery-header { text-align: center; margin-bottom: 2rem; }
+  .search-bar {
+    display: flex; gap: 0.8rem; justify-content: center; margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    padding: 0.65rem 1.4rem;
+    border: 1.5px solid var(--pastel);
+    border-radius: 30px;
+    background: var(--cream);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 260px;
+    cursor: none;
+  }
+  .search-input:focus { border-color: var(--teal); }
+  .filter-btn {
+    padding: 0.6rem 1.2rem;
+    border: 1.5px solid var(--pastel);
+    border-radius: 30px;
+    background: transparent;
+    color: var(--text);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    cursor: none;
+    transition: all 0.2s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--teal);
+    color: white;
+    border-color: var(--teal);
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .gallery-card {
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 3/4;
+    cursor: none;
+    box-shadow: 0 6px 24px var(--shadow);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
+  .gallery-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 16px 48px var(--shadow);
+  }
+  .gallery-card-bg {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem;
+    transition: transform 0.4s ease;
+  }
+  .gallery-card:hover .gallery-card-bg { transform: scale(1.08); }
+  .gallery-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(47,79,79,0.7) 100%);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .gallery-card:hover .gallery-overlay { opacity: 1; }
+  .gallery-overlay h3 { color: white; font-size: 1rem; font-weight: 400; margin-bottom: 0.3rem; }
+  .gallery-overlay span { color: rgba(255,255,255,0.7); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .heart-btn {
+    position: absolute; top: 0.8rem; right: 0.8rem;
+    background: rgba(255,255,255,0.85);
+    border: none; width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: none;
+    font-size: 0.9rem;
+    transition: transform 0.2s, background 0.2s;
+    backdrop-filter: blur(4px);
+  }
+  .heart-btn:hover, .heart-btn.liked { background: #ff6b8a; color: white; transform: scale(1.15); }
+  .download-btn {
+    position: absolute; top: 0.8rem; left: 0.8rem;
+    background: rgba(255,255,255,0.85);
+    border: none; width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: none;
+    font-size: 0.8rem;
+    transition: transform 0.2s, background 0.2s;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.2s;
+  }
+  .gallery-card:hover .download-btn { opacity: 1; }
+
+  /* === SERVICES === */
+  #services {
+    padding: 5rem 2rem 6rem;
+    background: var(--cream);
+  }
+  .services-header { text-align: center; margin-bottom: 3rem; }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .service-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    cursor: none;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    border: 1.5px solid transparent;
+    box-shadow: 0 4px 20px var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--teal), var(--turquoise));
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px var(--shadow);
+    border-color: var(--pastel);
+  }
+  .service-card.selected {
+    border-color: var(--turquoise);
+    box-shadow: 0 8px 32px rgba(63,167,163,0.25);
+  }
+  .service-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .service-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 400;
+    margin-bottom: 0.6rem;
+    color: var(--text);
+  }
+  .service-card p { font-size: 0.8rem; line-height: 1.7; opacity: 0.65; margin-bottom: 1.2rem; }
+  .btn-order {
+    display: inline-block;
+    padding: 0.55rem 1.4rem;
+    background: linear-gradient(135deg, var(--teal), var(--turquoise));
+    color: white;
+    border-radius: 30px;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    cursor: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-order:hover { opacity: 0.88; transform: scale(1.03); }
+
+  /* === ORDER FORM === */
+  #order {
+    padding: 5rem 2rem 6rem;
+    background: var(--bg);
+  }
+  .order-inner {
+    max-width: 600px; margin: 0 auto; text-align: center;
+  }
+  .form-card {
+    background: var(--cream);
+    border-radius: 28px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 8px 40px var(--shadow);
+    margin-top: 2rem;
+    text-align: left;
+    border: 1px solid rgba(110,198,195,0.2);
+  }
+  .form-group { margin-bottom: 1.4rem; }
+  .form-group label {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--turquoise);
+    margin-bottom: 0.4rem;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 0.8rem 1.2rem;
+    border: 1.5px solid var(--pastel);
+    border-radius: 12px;
+    background: var(--white);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(110,198,195,0.12);
+  }
+  .form-group textarea { resize: vertical; min-height: 120px; }
+  .btn-submit {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--teal), var(--turquoise));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 24px rgba(63,167,163,0.3);
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(63,167,163,0.4); }
+
+  /* === REVIEWS === */
+  #reviews {
+    padding: 5rem 2rem 6rem;
+    background: var(--cream);
+  }
+  .reviews-header { text-align: center; margin-bottom: 3rem; }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .review-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 1.8rem;
+    box-shadow: 0 4px 20px var(--shadow);
+    border: 1px solid rgba(110,198,195,0.15);
+    transition: transform 0.3s;
+    position: relative;
+  }
+  .review-card:hover { transform: translateY(-3px); }
+  .review-card .stars { color: var(--teal); font-size: 0.85rem; margin-bottom: 0.8rem; letter-spacing: 0.1em; }
+  .review-card p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+  .reviewer { display: flex; align-items: center; gap: 0.7rem; }
+  .reviewer-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pastel), var(--teal));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+  }
+  .reviewer-name { font-size: 0.8rem; color: var(--turquoise); font-weight: 500; }
+
+  /* === WISHLIST === */
+  #wishlist {
+    padding: 4rem 2rem;
+    background: var(--bg);
+    text-align: center;
+  }
+  .wishlist-grid {
+    display: flex; flex-wrap: wrap; gap: 1rem;
+    justify-content: center; margin-top: 2rem;
+  }
+  .wishlist-chip {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: var(--cream);
+    border: 1.5px solid var(--pastel);
+    border-radius: 30px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.82rem;
+    color: var(--text);
+    animation: fadeSlide 0.4s ease both;
+  }
+  .wishlist-chip span { color: #ff6b8a; }
+  @keyframes fadeSlide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+  /* === BLOG === */
+  #blog {
+    padding: 5rem 2rem 6rem;
+    background: var(--cream);
+  }
+  .blog-header { text-align: center; margin-bottom: 3rem; }
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.6rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .blog-card {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px var(--shadow);
+    transition: transform 0.3s;
+    cursor: none;
+  }
+  .blog-card:hover { transform: translateY(-4px); }
+  .blog-img {
+    height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+  }
+  .blog-body { padding: 1.5rem; }
+  .blog-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 0.5rem;
+  }
+  .blog-body h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  .blog-body p { font-size: 0.82rem; line-height: 1.7; opacity: 0.65; margin-bottom: 1rem; }
+  .blog-read {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--turquoise);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .blog-read:hover { opacity: 0.7; }
+
+  /* === BEHIND THE ART === */
+  #process {
+    padding: 5rem 2rem;
+    background: var(--bg);
+    text-align: center;
+  }
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.2rem;
+    max-width: 1000px;
+    margin: 2rem auto 0;
+  }
+  .process-card {
+    border-radius: 16px;
+    aspect-ratio: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-size: 2.5rem;
+    box-shadow: 0 4px 16px var(--shadow);
+    transition: transform 0.3s;
+    cursor: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .process-card:hover { transform: scale(1.04); }
+  .process-label {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    opacity: 0.7;
+  }
+
+  /* === NEWSLETTER === */
+  #newsletter {
+    padding: 5rem 2rem;
+    background: linear-gradient(135deg, var(--pastel) 0%, var(--teal) 100%);
+    text-align: center;
+  }
+  #newsletter .section-title { color: var(--text); }
+  #newsletter p { color: var(--text); opacity: 0.75; margin-bottom: 2rem; font-size: 0.9rem; }
+  .newsletter-form { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
+  .newsletter-input {
+    padding: 0.8rem 1.6rem;
+    border: none;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.85);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    width: 280px;
+    cursor: none;
+  }
+  .btn-subscribe {
+    padding: 0.8rem 2rem;
+    background: var(--turquoise);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: none;
+    transition: transform 0.2s, opacity 0.2s;
+    box-shadow: 0 4px 16px rgba(63,167,163,0.3);
+  }
+  .btn-subscribe:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  /* === FOOTER === */
+  footer {
+    background: var(--text);
+    color: rgba(184,225,221,0.8);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  body.dark footer { background: #111e1e; }
+  .footer-logo {
+    font-family: 'Sacramento', cursive;
+    font-size: 2.5rem;
+    color: var(--teal);
+    margin-bottom: 1rem;
+  }
+  .social-links { display: flex; gap: 1.2rem; justify-content: center; margin: 1rem 0; }
+  .social-links a {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(184,225,221,0.3);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(184,225,221,0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  }
+  .social-links a:hover { border-color: var(--teal); color: var(--teal); transform: translateY(-2px); }
+  footer small { font-size: 0.75rem; opacity: 0.45; }
+
+  /* === SCROLL REVEAL === */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* === GRADIENT BACKGROUNDS FOR GALLERY CARDS === */
+  .g1 { background: linear-gradient(135deg, #B8E1DD, #6EC6C3); }
+  .g2 { background: linear-gradient(135deg, #d4f0ee, #3FA7A3); }
+  .g3 { background: linear-gradient(135deg, #c5f0d6, #6EC6C3); }
+  .g4 { background: linear-gradient(135deg, #EAF7F6, #B8E1DD); }
+  .g5 { background: linear-gradient(135deg, #c0e8e8, #3FA7A3); }
+  .g6 { background: linear-gradient(135deg, #d8f4f0, #6EC6C3); }
+  .g7 { background: linear-gradient(135deg, #b2e0dc, #2f9e9a); }
+  .g8 { background: linear-gradient(135deg, #e0f7f5, #82ceca); }
+  .p1 { background: linear-gradient(135deg, #f0e0ee, #c89ac8); }
+  .p2 { background: linear-gradient(135deg, #fde8c8, #e8b480); }
+
+  /* === RESPONSIVE === */
+  @media(max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .about-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .about-art-placeholder { aspect-ratio: 1; max-width: 280px; margin: 0 auto; }
+    .form-card { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">Ojaesthetic</div>
+  <svg width="120" height="60" viewBox="0 0 120 60" style="margin-top:1.5rem;opacity:0.6">
+    <path d="M60 30 Q45 10 20 18 Q8 22 10 32 Q12 44 25 38 Q40 30 60 30 Q80 30 95 38 Q108 44 110 32 Q112 22 100 18 Q75 10 60 30Z" 
+          fill="none" stroke="#6EC6C3" stroke-width="1.5" stroke-linecap="round">
+      <animate attributeName="stroke-dasharray" values="0 300;300 0" dur="2s" repeatCount="indefinite"/>
+    </path>
+  </svg>
+  <div class="loader-hint">Curating your experience…</div>
+</div>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- BUTTERFLY CANVAS -->
+<canvas id="butterfly-canvas"></canvas>
+
+<!-- NAVIGATION -->
+<nav>
+  <a href="#hero" class="nav-logo">Ojaesthetic</a>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#services">Services</a>
+    <a href="#order">Order</a>
+    <a href="#blog">Blog</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-dark" id="darkToggle" title="Toggle dark mode">🌙</button>
+    <!-- Auth buttons — shown/hidden by JS -->
+    <button class="btn-auth-nav" id="navLoginBtn" onclick="openAuthModal('login')" style="display:none;padding:.5rem 1.2rem;border-radius:30px;border:1.5px solid var(--pastel);background:transparent;color:var(--text);font-size:.8rem;cursor:none;transition:border-color .2s">Sign In</button>
+    <button class="btn-auth-nav" id="navUserBtn" onclick="openAuthModal('profile')" style="display:none;padding:.45rem 1rem;border-radius:30px;background:var(--turquoise);color:white;font-size:.78rem;border:none;cursor:none;letter-spacing:.04em" title="My Account">👤 <span id="navUserName"></span></button>
+  </div>
+</nav>
+
+<!-- ── AUTH MODAL ── -->
+<div id="authModal" style="position:fixed;inset:0;background:rgba(47,79,79,0.5);backdrop-filter:blur(6px);z-index:99990;display:none;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:var(--white);border-radius:24px;padding:2.4rem 2rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(47,79,79,0.2);animation:modalIn .25s ease">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="font-family:'Sacramento',cursive;font-size:2.2rem;color:var(--turquoise)" id="authModalTitle">Sign In</div>
+    </div>
+    <!-- Login Tab -->
+    <div id="authLoginTab">
+      <div style="margin-bottom:1rem">
+        <label style="display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--turquoise);margin-bottom:.35rem">Email</label>
+        <input id="authEmail" type="email" placeholder="your@email.com" style="width:100%;padding:.75rem 1rem;border:1.5px solid var(--pastel);border-radius:10px;background:var(--cream);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;cursor:none">
+      </div>
+      <div style="margin-bottom:1.4rem">
+        <label style="display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--turquoise);margin-bottom:.35rem">Password</label>
+        <input id="authPassword" type="password" placeholder="••••••••" style="width:100%;padding:.75rem 1rem;border:1.5px solid var(--pastel);border-radius:10px;background:var(--cream);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;cursor:none">
+      </div>
+      <div id="authError" style="color:#e05d5d;font-size:.8rem;margin-bottom:.8rem;display:none"></div>
+      <button onclick="doAuthLogin()" style="width:100%;padding:.9rem;background:linear-gradient(135deg,var(--teal),var(--turquoise));color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.9rem;cursor:none;transition:opacity .2s">Sign In 🦋</button>
+      <p style="text-align:center;margin-top:1rem;font-size:.82rem;opacity:.6">No account? <a href="#" onclick="switchAuthTab('signup')" style="color:var(--turquoise)">Create one →</a></p>
+    </div>
+    <!-- Signup Tab -->
+    <div id="authSignupTab" style="display:none">
+      <div style="margin-bottom:1rem">
+        <label style="display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--turquoise);margin-bottom:.35rem">Name</label>
+        <input id="authName" type="text" placeholder="Your name" style="width:100%;padding:.75rem 1rem;border:1.5px solid var(--pastel);border-radius:10px;background:var(--cream);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;cursor:none">
+      </div>
+      <div style="margin-bottom:1rem">
+        <label style="display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--turquoise);margin-bottom:.35rem">Email</label>
+        <input id="authEmailS" type="email" placeholder="your@email.com" style="width:100%;padding:.75rem 1rem;border:1.5px solid var(--pastel);border-radius:10px;background:var(--cream);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;cursor:none">
+      </div>
+      <div style="margin-bottom:1.4rem">
+        <label style="display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--turquoise);margin-bottom:.35rem">Password</label>
+        <input id="authPasswordS" type="password" placeholder="Min 8 chars, 1 uppercase, 1 number" style="width:100%;padding:.75rem 1rem;border:1.5px solid var(--pastel);border-radius:10px;background:var(--cream);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;cursor:none">
+      </div>
+      <div id="authErrorS" style="color:#e05d5d;font-size:.8rem;margin-bottom:.8rem;display:none"></div>
+      <button onclick="doAuthSignup()" style="width:100%;padding:.9rem;background:linear-gradient(135deg,var(--teal),var(--turquoise));color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:.9rem;cursor:none">Create Account 🌸</button>
+      <p style="text-align:center;margin-top:1rem;font-size:.82rem;opacity:.6">Already have one? <a href="#" onclick="switchAuthTab('login')" style="color:var(--turquoise)">Sign in →</a></p>
+    </div>
+    <!-- Profile Tab -->
+    <div id="authProfileTab" style="display:none;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:.5rem">🌸</div>
+      <div id="profileName" style="font-size:1.1rem;font-weight:500;margin-bottom:.2rem"></div>
+      <div id="profileEmail" style="font-size:.82rem;opacity:.55;margin-bottom:1.5rem"></div>
+      <a href="#wishlist" onclick="closeAuthModal()" style="display:block;padding:.7rem;border:1.5px solid var(--pastel);border-radius:10px;margin-bottom:.7rem;color:var(--text);text-decoration:none;font-size:.85rem;transition:border-color .2s">❤️  My Wishlist</a>
+      <a href="#order" onclick="closeAuthModal()" style="display:block;padding:.7rem;border:1.5px solid var(--pastel);border-radius:10px;margin-bottom:1.2rem;color:var(--text);text-decoration:none;font-size:.85rem">🎁  My Orders</a>
+      <button onclick="doFrontendLogout()" style="width:100%;padding:.7rem;background:rgba(224,93,93,.1);border:1px solid rgba(224,93,93,.25);color:#e05d5d;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:none">Sign Out</button>
+    </div>
+    <button onclick="closeAuthModal()" style="position:absolute;top:1rem;right:1.2rem;background:none;border:none;font-size:1.2rem;cursor:none;opacity:.4;color:var(--text)">✕</button>
+  </div>
+</div>
+<style>
+@keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+#authModal .open{display:flex}
+</style>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content reveal">
+    <div class="hero-eyebrow">✦ An Artistic Journey ✦</div>
+    <h1 class="hero-title">Ojaesthetic</h1>
+    <p class="hero-tagline">"Where colors speak and art feels alive."</p>
+    <p class="hero-intro">A sanctuary of handcrafted art — from delicate pencil sketches to vivid canvas portraits. Every piece holds a story, every brushstroke a feeling.</p>
+    <a href="#gallery" class="btn-primary">View Gallery</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-art-placeholder reveal">🌸</div>
+    <div class="about-text reveal">
+      <div class="section-label">About the artist</div>
+      <h2 class="section-title">Art that <em>breathes</em></h2>
+      <div class="quote">"I paint feelings, not just subjects."</div>
+      <p>Hello, I'm Oja — a self-taught artist who believes every canvas holds a universe waiting to unfold. My work lives at the intersection of emotion, texture, and the quiet language of color.</p>
+      <p>From blooming botanicals to intimate portraits, each piece is an invitation to slow down, feel deeply, and find beauty in the ephemeral.</p>
+      <p>Follow the journey on <a href="https://instagram.com/ojaesthetic" style="color:var(--turquoise);">@ojaesthetic</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="gallery-header reveal">
+    <div class="section-label">Portfolio</div>
+    <h2 class="section-title">The <em>Gallery</em></h2>
+  </div>
+  <div class="search-bar reveal">
+    <input type="text" class="search-input" placeholder="🔍  Search artworks…" id="searchInput">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="painting">Paintings</button>
+    <button class="filter-btn" data-filter="sketch">Sketches</button>
+    <button class="filter-btn" data-filter="digital">Digital</button>
+  </div>
+  <div class="gallery-grid" id="galleryGrid">
+    <!-- Cards injected by JS -->
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="services-header reveal">
+    <div class="section-label">Commission Art</div>
+    <h2 class="section-title">Art <em>Services</em></h2>
+    <p style="opacity:.6;font-size:.9rem;max-width:480px;margin:0 auto;">Choose your medium and let's create something extraordinary — made just for you.</p>
+  </div>
+  <div class="services-grid" id="servicesGrid">
+    <!-- injected by JS -->
+  </div>
+</section>
+
+<!-- ORDER FORM -->
+<section id="order">
+  <div class="order-inner">
+    <div class="reveal">
+      <div class="section-label">Commission</div>
+      <h2 class="section-title">Place Your <em>Order</em></h2>
+      <p style="opacity:.65;font-size:.9rem;margin-bottom:0">Describe your dream, and I'll paint it into reality.</p>
+    </div>
+    <div class="form-card reveal">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="formName" placeholder="e.g. Priya Sharma">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="formEmail" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label>Artwork Type</label>
+        <select id="formArtType">
+          <option value="">Select an artwork type…</option>
+          <option>Texture Painting</option>
+          <option>Canvas Portrait</option>
+          <option>Pencil Sketch</option>
+          <option>Digital Illustration</option>
+          <option>Custom Aesthetic Artwork</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Your Vision</label>
+        <textarea id="formMessage" placeholder="Describe your dream artwork… colors, mood, references, emotions you want to capture 🌸"></textarea>
+      </div>
+      <button class="btn-submit" onclick="submitOrder()">✦ Send My Dream</button>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="reviews-header reveal">
+    <div class="section-label">Testimonials</div>
+    <h2 class="section-title">Whispered <em>Words</em></h2>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="stars">★★★★★</div>
+      <p>"Absolutely in love with the artwork! It feels so soft and expressive 💕"</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">🌷</div>
+        <div class="reviewer-name">Riya M.</div>
+      </div>
+    </div>
+    <div class="review-card reveal">
+      <div class="stars">★★★★★</div>
+      <p>"Ojaesthetic truly captures emotions through colors. A rare gift."</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">🌿</div>
+        <div class="reviewer-name">Anika S.</div>
+      </div>
+    </div>
+    <div class="review-card reveal">
+      <div class="stars">★★★★★</div>
+      <p>"Every piece feels like a story. So calming and beautiful!"</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">🦋</div>
+        <div class="reviewer-name">Meera T.</div>
+      </div>
+    </div>
+    <div class="review-card reveal">
+      <div class="stars">★★★★★</div>
+      <p>"This is not just art, it's a feeling ✨ I keep returning to it."</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">🌸</div>
+        <div class="reviewer-name">Shreya K.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WISHLIST -->
+<section id="wishlist">
+  <div class="reveal">
+    <div class="section-label">Favorites</div>
+    <h2 class="section-title">Your <em>Wishlist</em></h2>
+    <p style="opacity:.6;font-size:.88rem;margin-top:.5rem">Heart any artwork to save it here.</p>
+  </div>
+  <div class="wishlist-grid" id="wishlistGrid">
+    <div style="opacity:.45;font-size:.85rem;margin-top:1rem">No favorites yet — explore the gallery 🌿</div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section id="blog">
+  <div class="blog-header reveal">
+    <div class="section-label">Stories & Thoughts</div>
+    <h2 class="section-title">The <em>Journal</em></h2>
+  </div>
+  <div class="blog-grid">
+    <div class="blog-card reveal">
+      <div class="blog-img g1">🌊</div>
+      <div class="blog-body">
+        <div class="blog-tag">Reflections</div>
+        <h3>Why I paint with teal</h3>
+        <p>Teal is the color between stillness and motion — it's where I find my peace and pour it onto canvas.</p>
+        <a href="#" class="blog-read">Read More →</a>
+      </div>
+    </div>
+    <div class="blog-card reveal">
+      <div class="blog-img g3">🌸</div>
+      <div class="blog-body">
+        <div class="blog-tag">Process</div>
+        <h3>The language of petals</h3>
+        <p>Flowers are nature's way of expressing what words cannot. Here's how I translate that into art.</p>
+        <a href="#" class="blog-read">Read More →</a>
+      </div>
+    </div>
+    <div class="blog-card reveal">
+      <div class="blog-img p1">🦋</div>
+      <div class="blog-body">
+        <div class="blog-tag">Inspiration</div>
+        <h3>On butterflies and freedom</h3>
+        <p>A butterfly doesn't know its wings are beautiful. That's the kind of art I aspire to create.</p>
+        <a href="#" class="blog-read">Read More →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEHIND THE ART -->
+<section id="process">
+  <div class="reveal">
+    <div class="section-label">Behind the Canvas</div>
+    <h2 class="section-title">The <em>Process</em></h2>
+    <p style="opacity:.6;font-size:.88rem;max-width:480px;margin:.5rem auto 0">A peek into the quiet, meditative ritual of creating each piece.</p>
+  </div>
+  <div class="process-grid">
+    <div class="process-card g1 reveal"><div>🖌️</div><div class="process-label">Sketching</div></div>
+    <div class="process-card g2 reveal"><div>🎨</div><div class="process-label">Mixing Colors</div></div>
+    <div class="process-card g3 reveal"><div>🖼️</div><div class="process-label">Layering</div></div>
+    <div class="process-card p2 reveal"><div>✍️</div><div class="process-label">Final Details</div></div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section id="newsletter">
+  <div class="reveal">
+    <div class="section-label" style="color:var(--turquoise)">Stay connected</div>
+    <h2 class="section-title">Join the <em>Aesthetic Journey</em></h2>
+    <p>New artworks, behind-the-scenes glimpses, and quiet creative musings — delivered softly to your inbox.</p>
+    <div class="newsletter-form">
+      <input type="email" class="newsletter-input" placeholder="your@email.com">
+      <button class="btn-subscribe">✦ Subscribe</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Ojaesthetic</div>
+  <p style="font-size:.82rem;opacity:.55;margin-bottom:.8rem">Where colors speak and art feels alive.</p>
+  <div class="social-links">
+    <a href="https://instagram.com/ojaesthetic" target="_blank" title="Instagram">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+    </a>
+    <a href="https://pinterest.com/ojaesthetic" target="_blank" title="Pinterest">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.2 2.6 7.8 6.3 9.3-.1-.8-.1-2.1.1-3l1.3-5.4s-.3-.7-.3-1.7c0-1.6.9-2.8 2.3-2.8 1.1 0 1.6.8 1.6 1.8 0 1.1-.7 2.8-1.1 4.3-.3 1.3.6 2.3 1.9 2.3 2.2 0 3.7-2.8 3.7-6.2 0-2.6-1.7-4.5-4.8-4.5-3.5 0-5.6 2.6-5.6 5.5 0 1 .3 1.7.7 2.2.1.1.1.2.1.3l-.3 1.1c-.1.2-.2.3-.4.2-1.5-.6-2.2-2.4-2.2-4.3 0-3.2 2.7-7 8-7 4.3 0 7.1 3.1 7.1 6.4 0 4.4-2.4 7.7-5.9 7.7-1.2 0-2.3-.6-2.7-1.3l-.7 2.9c-.3 1-.9 2-1.4 2.8.9.3 1.9.4 2.9.4 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+    </a>
+  </div>
+  <small>© 2025 Ojaesthetic. All rights reserved. Made with love & teal.</small>
+</footer>
+
+<script>
+// ============================================================
+// CURSOR
+// ============================================================
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursor-trail');
+let mx = 0, my = 0, tx = 0, ty = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+});
+function animTrail() {
+  tx += (mx - tx) * 0.12;
+  ty += (my - ty) * 0.12;
+  trail.style.left = tx + 'px'; trail.style.top = ty + 'px';
+  requestAnimationFrame(animTrail);
+}
+animTrail();
+
+// ============================================================
+// BUTTERFLY CANVAS SYSTEM
+// ============================================================
+const canvas = document.getElementById('butterfly-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, butterflies = [], mouse = {x:-9999, y:-9999};
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+class Butterfly {
+  constructor(x, y, size) {
+    this.x = x ?? Math.random() * (typeof W !== 'undefined' ? W : 1200);
+    this.y = y ?? Math.random() * (typeof H !== 'undefined' ? H : 800);
+    this.size = size ?? (12 + Math.random() * 20);
+    this.baseSize = this.size;
+    this.angle = Math.random() * Math.PI * 2;
+    this.speed = 0.25 + Math.random() * 0.4;
+    this.waveAmp = 60 + Math.random() * 80;
+    this.waveFreq = 0.008 + Math.random() * 0.008;
+    this.t = Math.random() * 1000;
+    this.flutterT = Math.random() * 100;
+    this.flutterSpeed = 2 + Math.random() * 3;
+    this.opacity = 0.3 + Math.random() * 0.4;
+    this.color = Math.random() > 0.5 ? '#6EC6C3' : '#3FA7A3';
+    this.vx = 0; this.vy = 0;
+  }
+
+  update() {
+    this.t += 0.01;
+    this.flutterT += 0.06;
+
+    // Curved path
+    const targetX = this.x + Math.cos(this.angle) * this.speed;
+    const targetY = this.y + Math.sin(this.angle) * this.speed + Math.sin(this.t * this.waveFreq * 80) * 0.4;
+    
+    this.x += Math.cos(this.angle) * this.speed * 0.6;
+    this.y += Math.sin(this.angle) * this.speed * 0.6 + Math.sin(this.t * 1.2) * 0.3;
+    this.angle += 0.005 * Math.sin(this.t * 0.5);
+
+    // Mouse repulsion
+    const dx = this.x - mouse.x;
+    const dy = this.y - mouse.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const repulseR = 120;
+    if (dist < repulseR) {
+      const force = (repulseR - dist) / repulseR;
+      this.x += (dx / dist) * force * 3.5;
+      this.y += (dy / dist) * force * 3.5;
+      this.opacity = Math.max(0.05, this.opacity - 0.02);
+    } else {
+      this.opacity = Math.min(0.3 + Math.random() * 0.1, this.opacity + 0.005);
+    }
+
+    // Wrap
+    if (this.x < -60) this.x = W + 40;
+    if (this.x > W + 60) this.x = -40;
+    if (this.y < -60) this.y = H + 40;
+    if (this.y > H + 60) this.y = -40;
+  }
+
+  draw() {
+    const flutter = Math.sin(this.flutterT * this.flutterSpeed) * 0.7;
+    const s = this.size;
+    
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle + Math.PI/4);
+    ctx.globalAlpha = this.opacity;
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = 0.9;
+    ctx.lineCap = 'round';
+
+    // Left wing
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(
+      -s * (0.8 + flutter * 0.3), -s * 0.9,
+      -s * 1.2, -s * 0.4,
+      0, 0
+    );
+    ctx.bezierCurveTo(
+      -s * 0.9, s * 0.5,
+      -s * (0.5 + flutter * 0.2), s * 0.8,
+      0, 0
+    );
+    ctx.stroke();
+
+    // Right wing
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(
+      s * (0.8 + flutter * 0.3), -s * 0.9,
+      s * 1.2, -s * 0.4,
+      0, 0
+    );
+    ctx.bezierCurveTo(
+      s * 0.9, s * 0.5,
+      s * (0.5 + flutter * 0.2), s * 0.8,
+      0, 0
+    );
+    ctx.stroke();
+
+    // Body
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.15);
+    ctx.lineTo(0, s * 0.2);
+    ctx.stroke();
+
+    // Antennae
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.15);
+    ctx.quadraticCurveTo(-s * 0.2, -s * 0.6, -s * 0.25, -s * 0.75);
+    ctx.moveTo(0, -s * 0.15);
+    ctx.quadraticCurveTo(s * 0.2, -s * 0.6, s * 0.25, -s * 0.75);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+}
+
+function initButterflies() {
+  butterflies = [];
+  const count = Math.min(28, Math.floor(W * H / 40000));
+  for (let i = 0; i < count; i++) butterflies.push(new Butterfly());
+}
+initButterflies();
+window.addEventListener('resize', initButterflies);
+
+function animButterflies() {
+  ctx.clearRect(0, 0, W, H);
+  butterflies.forEach(b => { b.update(); b.draw(); });
+  requestAnimationFrame(animButterflies);
+}
+animButterflies();
+
+// ============================================================
+// LOADER
+// ============================================================
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 1800);
+});
+
+// ============================================================
+// DARK MODE
+// ============================================================
+const darkBtn = document.getElementById('darkToggle');
+darkBtn.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  darkBtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+});
+
+// ============================================================
+// SCROLL REVEAL
+// ============================================================
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(r => obs.observe(r));
+
+// ============================================================
+// GALLERY DATA
+// ============================================================
+const artworks = [
+  { title: 'Bloom in Teal', category: 'painting', emoji: '🌿', bg: 'g1' },
+  { title: 'Soft Horizon', category: 'painting', emoji: '🌅', bg: 'g2' },
+  { title: 'Whisper of Petals', category: 'sketch', emoji: '🌸', bg: 'g4' },
+  { title: 'Still Waters', category: 'digital', emoji: '🦋', bg: 'g5' },
+  { title: 'Reverie', category: 'painting', emoji: '🌙', bg: 'g6' },
+  { title: 'Ephemeral', category: 'sketch', emoji: '✍️', bg: 'g7' },
+  { title: 'Forest Pulse', category: 'digital', emoji: '🌿', bg: 'g3' },
+  { title: 'Serenity', category: 'painting', emoji: '🏵️', bg: 'g8' },
+];
+
+const wishlist = new Set();
+
+function renderGallery(items) {
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = '';
+  items.forEach((art, i) => {
+    const card = document.createElement('div');
+    card.className = 'gallery-card';
+    card.dataset.category = art.category;
+    const isLiked = wishlist.has(art.title);
+    card.innerHTML = `
+      <div class="gallery-card-bg ${art.bg}" style="font-size:3.5rem">${art.emoji}</div>
+      <button class="heart-btn ${isLiked ? 'liked' : ''}" data-title="${art.title}" data-emoji="${art.emoji}">
+        ${isLiked ? '❤️' : '🤍'}
+      </button>
+      <button class="download-btn" title="Save">⬇️</button>
+      <div class="gallery-overlay">
+        <h3>${art.title}</h3>
+        <span>${art.category}</span>
+      </div>
+    `;
+    card.style.animationDelay = (i * 0.06) + 's';
+    grid.appendChild(card);
+
+    card.querySelector('.heart-btn').addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      const title = btn.dataset.title;
+      const emoji = btn.dataset.emoji;
+      if (wishlist.has(title)) {
+        wishlist.delete(title);
+        btn.classList.remove('liked');
+        btn.textContent = '🤍';
+      } else {
+        wishlist.add(title);
+        btn.classList.add('liked');
+        btn.textContent = '❤️';
+        addToWishlist(title, emoji);
+      }
+      updateWishlist();
+    });
+  });
+}
+renderGallery(artworks);
+
+// Filters
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    renderGallery(f === 'all' ? artworks : artworks.filter(a => a.category === f));
+  });
+});
+
+// Search
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase();
+  renderGallery(q ? artworks.filter(a => a.title.toLowerCase().includes(q) || a.category.includes(q)) : artworks);
+});
+
+// ============================================================
+// WISHLIST
+// ============================================================
+function updateWishlist() {
+  const grid = document.getElementById('wishlistGrid');
+  if (wishlist.size === 0) {
+    grid.innerHTML = '<div style="opacity:.45;font-size:.85rem;margin-top:1rem">No favorites yet — explore the gallery 🌿</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  wishlist.forEach(title => {
+    const art = artworks.find(a => a.title === title);
+    if (!art) return;
+    const chip = document.createElement('div');
+    chip.className = 'wishlist-chip';
+    chip.innerHTML = `<span>❤️</span>${art.emoji} ${title}`;
+    grid.appendChild(chip);
+  });
+}
+
+// ============================================================
+// SERVICES
+// ============================================================
+const services = [
+  { icon: '🖌️', name: 'Texture Painting', desc: 'Rich tactile paintings with layered paint techniques. Each piece uniquely textured.' },
+  { icon: '🎨', name: 'Canvas Portrait', desc: 'Expressive portraits capturing personality, mood, and life.' },
+  { icon: '✏️', name: 'Pencil Sketch', desc: 'Delicate graphite sketches — from realistic to soft impressionistic.' },
+  { icon: '💻', name: 'Digital Illustration', desc: 'Clean, aesthetic digital art with soft palettes and crisp detail.' },
+  { icon: '✨', name: 'Custom Aesthetic Artwork', desc: 'Fully bespoke creation — your vision, your story, my brushstrokes.' },
+];
+
+const servicesGrid = document.getElementById('servicesGrid');
+services.forEach(svc => {
+  const card = document.createElement('div');
+  card.className = 'service-card reveal';
+  card.innerHTML = `
+    <div class="service-icon">${svc.icon}</div>
+    <h3>${svc.name}</h3>
+    <p>${svc.desc}</p>
+    <button class="btn-order" data-service="${svc.name}">Order Now</button>
+  `;
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  });
+  card.querySelector('.btn-order').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const sel = document.getElementById('formArtType');
+    const opts = Array.from(sel.options);
+    const match = opts.find(o => o.text === svc.name);
+    if (match) sel.value = match.value;
+    document.getElementById('order').scrollIntoView({ behavior: 'smooth' });
+  });
+  servicesGrid.appendChild(card);
+  obs.observe(card);
+});
+
+// ============================================================
+// BACKEND API CLIENT
+// ============================================================
+const API_BASE = 'http://localhost:5000/api';
+
+const OjaAuth = {
+  getToken: ()    => localStorage.getItem('oja_token'),
+  setToken: (t)   => localStorage.setItem('oja_token', t),
+  removeToken: () => localStorage.removeItem('oja_token'),
+  getUser:  ()    => { const u = localStorage.getItem('oja_user'); return u ? JSON.parse(u) : null; },
+  setUser:  (u)   => localStorage.setItem('oja_user', JSON.stringify(u)),
+  removeUser: ()  => localStorage.removeItem('oja_user'),
+  isLoggedIn: ()  => !!localStorage.getItem('oja_token'),
+};
+
+async function apiCall(endpoint, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  const token = OjaAuth.getToken();
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (opts.body instanceof FormData) delete headers['Content-Type'];
+  const res = await fetch(`${API_BASE}${endpoint}`, { ...opts, headers });
+  const data = await res.json().catch(() => ({ success: false, message: 'Server error' }));
+  if (!res.ok) throw new Error(data.message || `Error ${res.status}`);
+  return data;
+}
+
+function showToast(msg, type='success') {
+  let tc = document.getElementById('oja-toasts');
+  if (!tc) {
+    tc = document.createElement('div');
+    tc.id = 'oja-toasts';
+    tc.style.cssText = 'position:fixed;bottom:2rem;right:2rem;z-index:99995;display:flex;flex-direction:column;gap:.5rem';
+    document.body.appendChild(tc);
+  }
+  const t = document.createElement('div');
+  t.style.cssText = `padding:.8rem 1.5rem;border-radius:50px;color:white;font-family:'DM Sans',sans-serif;font-size:.85rem;box-shadow:0 6px 24px rgba(0,0,0,.15);animation:toastIn .3s ease;background:${type==='success'?'#3FA7A3':type==='error'?'#e05d5d':'#e8a750'}`;
+  t.textContent = msg;
+  tc.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .4s'; setTimeout(()=>t.remove(),400); }, 3500);
+}
+
+// ── AUTH UI ──────────────────────────────────────────────────
+function refreshAuthUI() {
+  const user = OjaAuth.getUser();
+  const loggedIn = OjaAuth.isLoggedIn();
+  const loginBtn = document.getElementById('navLoginBtn');
+  const userBtn  = document.getElementById('navUserBtn');
+  const nameEl   = document.getElementById('navUserName');
+  if (loginBtn) loginBtn.style.display = loggedIn ? 'none' : '';
+  if (userBtn)  userBtn.style.display  = loggedIn ? '' : 'none';
+  if (nameEl && user) nameEl.textContent = user.name.split(' ')[0];
+  if (loggedIn && user) {
+    const nameField  = document.getElementById('formName');
+    const emailField = document.getElementById('formEmail');
+    if (nameField  && !nameField.value)  nameField.value  = user.name;
+    if (emailField && !emailField.value) emailField.value = user.email;
+  }
+}
+
+function openAuthModal(tab='login') {
+  const modal = document.getElementById('authModal');
+  modal.style.display = 'flex';
+  switchAuthTab(tab === 'profile' && OjaAuth.isLoggedIn() ? 'profile' : tab);
+  if (tab === 'profile' && OjaAuth.isLoggedIn()) {
+    const u = OjaAuth.getUser();
+    document.getElementById('profileName').textContent  = u?.name  || '';
+    document.getElementById('profileEmail').textContent = u?.email || '';
+  }
+}
+function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+
+function switchAuthTab(tab) {
+  ['login','signup','profile'].forEach(t => {
+    document.getElementById(`auth${t.charAt(0).toUpperCase()+t.slice(1)}Tab`).style.display = t===tab?'':'none';
+  });
+  const titles = { login:'Sign In', signup:'Create Account', profile:'My Account' };
+  document.getElementById('authModalTitle').textContent = titles[tab] || 'Sign In';
+}
+
+document.getElementById('authModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('authModal')) closeAuthModal();
+});
+
+async function doAuthLogin() {
+  const email = document.getElementById('authEmail').value.trim();
+  const pass  = document.getElementById('authPassword').value;
+  const errEl = document.getElementById('authError');
+  errEl.style.display = 'none';
+  try {
+    const data = await apiCall('/auth/login', { method:'POST', body: JSON.stringify({ email, password: pass }) });
+    OjaAuth.setToken(data.token);
+    OjaAuth.setUser(data.user);
+    closeAuthModal();
+    refreshAuthUI();
+    showToast(`Welcome back, ${data.user.name.split(' ')[0]}! 🌸`);
+  } catch(err) {
+    errEl.textContent = err.message; errEl.style.display = '';
+  }
+}
+
+async function doAuthSignup() {
+  const name  = document.getElementById('authName').value.trim();
+  const email = document.getElementById('authEmailS').value.trim();
+  const pass  = document.getElementById('authPasswordS').value;
+  const errEl = document.getElementById('authErrorS');
+  errEl.style.display = 'none';
+  try {
+    const data = await apiCall('/auth/signup', { method:'POST', body: JSON.stringify({ name, email, password: pass }) });
+    OjaAuth.setToken(data.token);
+    OjaAuth.setUser(data.user);
+    closeAuthModal();
+    refreshAuthUI();
+    showToast(`Welcome to Ojaesthetic, ${name.split(' ')[0]}! 🦋`);
+  } catch(err) {
+    errEl.textContent = err.message; errEl.style.display = '';
+  }
+}
+
+function doFrontendLogout() {
+  OjaAuth.removeToken();
+  OjaAuth.removeUser();
+  closeAuthModal();
+  refreshAuthUI();
+  showToast('See you soon! 🌿');
+}
+
+// ── ORDER FORM (connected to backend) ────────────────────────
+async function submitOrder() {
+  const name  = document.getElementById('formName').value.trim();
+  const email = document.getElementById('formEmail').value.trim();
+  const type  = document.getElementById('formArtType').value;
+  const msg   = document.getElementById('formMessage').value.trim();
+
+  if (!name || !email || !type || !msg) {
+    showToast('Please fill in all fields 🌸', 'error'); return;
+  }
+
+  if (!OjaAuth.isLoggedIn()) {
+    showToast('Please sign in to place an order 🦋', 'error');
+    setTimeout(() => openAuthModal('login'), 800);
+    return;
+  }
+
+  try {
+    const data = await apiCall('/orders', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, artworkType: type, message: msg }),
+    });
+    showToast(data.message || 'Your dream artwork request is sent! 🌸');
+    ['formName','formEmail','formMessage'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('formArtType').value = '';
+  } catch(err) {
+    showToast(err.message, 'error');
+  }
+}
+
+// ── NEWSLETTER (connected to backend) ────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Wire subscribe button
+  const subBtn = document.querySelector('.btn-subscribe');
+  if (subBtn) {
+    subBtn.onclick = async () => {
+      const emailInput = document.querySelector('.newsletter-input');
+      const email = emailInput?.value?.trim();
+      if (!email || !/^\S+@\S+\.\S+$/.test(email)) { showToast('Please enter a valid email 🌿','error'); return; }
+      try {
+        const data = await apiCall('/newsletter/subscribe', { method:'POST', body: JSON.stringify({ email }) });
+        showToast(data.message || 'Subscribed! Welcome 🌸');
+        if (emailInput) emailInput.value = '';
+      } catch(err) { showToast(err.message,'error'); }
+    };
+  }
+
+  // Load live approved reviews
+  (async () => {
+    try {
+      const data = await apiCall('/reviews?highlighted=true');
+      if (data.reviews?.length) {
+        const grid = document.querySelector('.reviews-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        data.reviews.forEach(rev => {
+          const card = document.createElement('div');
+          card.className = 'review-card reveal';
+          card.innerHTML = `
+            <div class="stars">${'★'.repeat(rev.rating)}${'☆'.repeat(5-rev.rating)}</div>
+            <p>"${rev.text}"</p>
+            <div class="reviewer">
+              <div class="reviewer-avatar">${rev.userId?.name?.[0]||'🌸'}</div>
+              <div class="reviewer-name">${rev.userId?.name||'Happy Client'}</div>
+            </div>`;
+          grid.appendChild(card);
+          obs.observe(card);
+        });
+      }
+    } catch(_) { /* keep static reviews on API unavailable */ }
+  })();
+
+  refreshAuthUI();
+});
+
+// ============================================================
+// SMOOTH SCROLL for nav
+// ============================================================
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    const el = document.querySelector(id);
+    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
+</body>
+</html>

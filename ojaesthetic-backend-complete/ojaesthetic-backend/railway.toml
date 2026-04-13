@@ -1,0 +1,18 @@
+# railway.toml — Railway.app deployment config
+# Deploy: railway up
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "node server.js"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[[services]]
+name = "ojaesthetic-api"
+
+[services.deploy]
+numReplicas = 1
+sleepApplication = false

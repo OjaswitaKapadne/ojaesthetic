@@ -1,0 +1,31 @@
+# render.yaml — Render.com deployment config
+# Connect your GitHub repo at render.com → New Web Service
+
+services:
+  - type: web
+    name: ojaesthetic-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free                        # Change to 'starter' for production
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false                   # Set manually in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true           # Auto-generate secure secret
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+    healthCheckPath: /health
+    autoDeploy: true
